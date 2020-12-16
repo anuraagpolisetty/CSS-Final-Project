@@ -40,6 +40,8 @@ public class FileTable {
                }
             }
             else {
+
+               // if inode flag is ready to be used
                if (iNode.flag == 0 || iNode.flag == 1) {
                   break;
                }
