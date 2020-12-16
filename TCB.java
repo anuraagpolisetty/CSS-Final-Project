@@ -7,16 +7,16 @@ public class TCB {
     public FileTableEntry[] ftEnt = null; // added for the file system
 
     public TCB( Thread newThread, int myTid, int parentTid ) {
-	thread = newThread;
-	tid = myTid;
-	pid = parentTid;
-	terminated = false;
+		thread = newThread;
+		tid = myTid;
+		pid = parentTid;
+		terminated = false;
 
-	ftEnt = new FileTableEntry[32];    // added for the file system
-
-	System.err.println( "threadOS: a new thread (thread=" + thread + 
-			    " tid=" + tid + 
-			    " pid=" + pid + ")");
+		// The following code is added for the file system
+		ftEnt = new FileTableEntry[32];
+		for ( int i = 0; i < 32; i++ )
+		ftEnt[i] = null; // all entries initialized to null
+		// fd[0], fd[1], and fd[2] are kept null.
     }
 
     public synchronized Thread getThread( ) {
