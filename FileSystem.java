@@ -150,11 +150,18 @@ public class FileSystem {
 
 		if (theInode == null || ftEnt.mode.equals("r")) {
 			return -1;
-		} else if (theInode.flag == 2 ||
+		}
+
+		/*
+		else if (theInode.flag == 2 ||
 				   theInode.flag == 3 ||
 				   theInode.flag == 4) {
+
+			SysLib.cerr("\nInode flag is 2, 3, or 4\n");
+
 			return -1;
 		}
+		*/
 
 		int bufferLength = buffer.length;
 		int seekPtr, idx, offset, availBytes, remainingBytes, writeLength;
