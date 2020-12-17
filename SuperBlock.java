@@ -15,7 +15,7 @@ class SuperBlock {
 			return;
 		} else {
 			totalBlocks = diskSize;
-			SysLib.cerr("Formatting\n");
+			SysLib.cerr("Formatting test\n");
 			format(totalBlocks);
 		}
 	}
