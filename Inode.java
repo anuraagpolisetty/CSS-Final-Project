@@ -44,7 +44,7 @@ public class Inode {
 	}
 
 	// save to disk as the i-th node
-	int toDisk(short iNumber) {
+	void toDisk(short iNumber) {
 		int blockNum = getBlockNum(iNumber);
 		int offset   = getOffset(iNumber);
 		byte[] data  = new byte[Disk.blockSize];
@@ -63,6 +63,8 @@ public class Inode {
 
 		SysLib.short2bytes(indirect, data, offset);
 		SysLib.rawwrite(blockNum, data);
+
+
 	}
 
 	// calculates and returns a block number
