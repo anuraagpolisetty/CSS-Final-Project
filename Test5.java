@@ -168,13 +168,13 @@ class Test5 extends Thread {
     }
     for ( int i = 0; i < 16; i++ )
       if ( tmpBuf[i] != buf16[i] ) {
-        SysLib.cout( "buf[" + i + "] = " + tmpBuf[i] + " (wrong)\n" );
+        SysLib.cout( "buf[" + i + "] = " + tmpBuf[i] + " (wrong!)\n" );
         SysLib.close( fd );
         return false;
       }
     for ( int i = 16; i < 48; i++ )
       if ( tmpBuf[i] != buf32[i - 16] ) {
-        SysLib.cout( "buf[" + i + "] = " + tmpBuf[i] + " (wrong)\n" );
+        SysLib.cout( "buf[" + i + "] = " + tmpBuf[i] + " (wrong!!)\n" );
         SysLib.close( fd );
         return false;
       }
