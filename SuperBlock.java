@@ -5,7 +5,7 @@ class SuperBlock {
 	public int freeList;
 
 	public SuperBlock(int diskSize) {
-		byte[] superBlock = new byte[Disk.blockSize]
+		byte[] superBlock = new byte[Disk.blockSize];
 		SysLib.rawread(0, superBlock);
 		totalBlocks = SysLib.bytes2int(superBlock, 0);
 		inodeBlocks = SysLib.bytes2int(superBlock, 4);
@@ -93,7 +93,7 @@ class SuperBlock {
 			return false;
 		}
 
-		byte block = new byte[Disk.blockSize];
+		byte[] block = new byte[Disk.blockSize];
 
 		SysLib.int2bytes(freeList, block, 0);
 		SysLib.rawwrite(oldBlockNumber, block);

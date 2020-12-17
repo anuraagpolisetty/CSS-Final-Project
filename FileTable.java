@@ -69,7 +69,7 @@ public class FileTable {
       // increment this inode's count
       iNode.count++;
       // immediately write back this inode to the disk
-      inode.toDisk(iNum);
+      iNode.toDisk(iNum);
       // return a reference to this file (structure) table entry
       FileTableEntry entry = new FileTableEntry(iNode, iNum, mode);
       table.addElement(entry);

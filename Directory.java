@@ -50,7 +50,7 @@ public class Directory {
 
     for(int i = 0; i < dirSize; i++) {
       // write into data array offset by difference of 4 indices
-      SysLib.int2bytes(fsize[i], data, offser);
+      SysLib.int2bytes(fsize[i], data, offset);
       offset += 4;
     }
 
