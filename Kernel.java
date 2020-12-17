@@ -1,5 +1,6 @@
 import java.util.*;
 import java.lang.reflect.*;
+import java.nio.file.FileSystem;
 import java.io.*;
 
 public class Kernel
@@ -57,6 +58,9 @@ public class Kernel
     private final static int COND_DISK_REQ = 1; // wait condition 
     private final static int COND_DISK_FIN = 2; // wait condition
 
+	 // FileSystem reference
+	 private static FileSystem fs;
+
     // Standard input
     private static BufferedReader input
 	= new BufferedReader( new InputStreamReader( System.in ) );
@@ -64,6 +68,7 @@ public class Kernel
     // The heart of Kernel
     public static int interrupt( int irq, int cmd, int param, Object args ) {
 	TCB myTcb;
+	FileTableEntry myFtEnt;
 	switch( irq ) {
 	case INTERRUPT_SOFTWARE: // System calls
 	    switch( cmd ) { 
@@ -82,6 +87,7 @@ public class Kernel
 		// instantiate synchronized queues
 		ioQueue = new SyncQueue( );
 		waitQueue = new SyncQueue( scheduler.getMaxThreads( ) );
+		fs = new FileSystem(1000);
 		return OK;
 	    case EXEC:
 		return sysExec( ( String[] )args );
@@ -173,21 +179,44 @@ public class Kernel
 	    case CSYNC:   // to be implemented in assignment 4
 		cache.sync( );
 		return OK;
-	    case CFLUSH:  // to be implemented in assignment 4
+		case CFLUSH:  // to be implemented in assignment 4
 		cache.flush( );
 		return OK;
-	    case OPEN:    // to be implemented in project
-		return OK;
-	    case CLOSE:   // to be implemented in project
-		return OK;
-	    case SIZE:    // to be implemented in project
-		return OK;
-	    case SEEK:    // to be implemented in project
-		return OK;
-	    case FORMAT:  // to be implemented in project
-		return OK;
-	    case DELETE:  // to be implemented in project
-		return OK;
+		case OPEN:    // to be implemented in project
+			if ((myTcb = scheduler.getMyTcb()) == null)
+				return ERROR;
+			else {
+				String[] s = (String[]) args;
+				myFtEnt = fs.open(s[0],s[1]);
+				int fd = myTcb.getFd(myFtEnt);
+			}
+			return fd;
+		case CLOSE:   // to be implemented in project
+			if ((myTcb = scheduler.getMyTcb()) == null) 
+				return ERROR;
+			myFtEnt = myTcb.getFtEnt(param);
+			if ((myFtEnt == null) || (fs.close(myFtEnt) == false)) 
+				return ERROR;
+			if (myTcb.returnFd(param) != myFtEnt) 
+				return ERROR;
+			return OK;
+		case SIZE:    // to be implemented in project
+			if ((myTcb = scheduler.getMyTcb()) == null) 
+				return ERROR;
+			if ((myFtEnt = myTcb.getFtEnt(param) == null)
+				return ERROR;
+			return fs.fsize;
+		case SEEK:    // to be implemented in project
+			int[] seekArgs = (int[]) args;
+			if ((myTcb = scheduler.getMyTcb()) == null)
+				return ERROR;
+			if ((myFtEnt = myTcb.getFtEnt(param) == null)
+				return ERROR;
+			return fs.seek(myFtEnt, seekArgs[0], seekArgs[1]);
+		case FORMAT:  // to be implemented in project
+			return fs.format(param) ? OK : ERROR;
+		case DELETE:  // to be implemented in project
+			return fs.delete((String) args) ? OK : ERROR;
 	    }
 	    return ERROR;
 	case INTERRUPT_DISK: // Disk interrupts
