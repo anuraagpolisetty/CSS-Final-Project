@@ -75,6 +75,7 @@ public class Kernel
 		// instantiate and start a scheduler
 		scheduler = new Scheduler( ); 
 		scheduler.start( );
+		SysLib.cerr("Scheduler initialized");
 		
 		// instantiate and start a disk
 		disk = new Disk( 1000 );
@@ -156,12 +157,12 @@ public class Kernel
 				System.out.println( "threadOS: caused read errors" );
 				return ERROR;
 			}
-			// myTcb = scheduler.getMyTcb();
-			// if ((myTcb == null))
-			// 				return ERROR;
-			// if ((myFtEnt = myTcb.getFtEnt(param)) == null)
-			// 				return ERROR;
-			return OK;//fs.read(myFtEnt, (byte[]) args);
+			myTcb = scheduler.getMyTcb();
+			if ((myTcb == null))
+							return ERROR;
+			if ((myFtEnt = myTcb.getFtEnt(param)) == null)
+							return ERROR;
+			return fs.read(myFtEnt, (byte[]) args);
 		case WRITE:
 			switch ( param ) {
 			case STDIN:
@@ -174,12 +175,12 @@ public class Kernel
 				System.err.print( (String)args );
 				break;
 			}
-			// myTcb = scheduler.getMyTcb();
-			// if (myTcb == null)
-			// 	return ERROR;
-			// if ((myFtEnt = myTcb.getFtEnt(param)) == null)
-			// 	return ERROR;
-			return OK;//fs.write(myFtEnt, (byte[]) args);
+			myTcb = scheduler.getMyTcb();
+			if (myTcb == null)
+				return ERROR;
+			if ((myFtEnt = myTcb.getFtEnt(param)) == null)
+				return ERROR;
+			return fs.write(myFtEnt, (byte[]) args);
 	    case CREAD:   // to be implemented in assignment 4
 		return cache.read( param, ( byte[] )args ) ? OK : ERROR;
 	    case CWRITE:  // to be implemented in assignment 4

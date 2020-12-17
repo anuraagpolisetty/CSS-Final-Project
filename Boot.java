@@ -15,7 +15,7 @@ public class Boot
      * @param args[] won't be used.
      */
     public static void main ( String args[] ) {
-	SysLib.cerr( "threadOS ver 2.0:\n" );
+	// SysLib.cerr( "threadOS ver 2.0:\n" );
 	SysLib.boot( );
 	SysLib.cerr( "Type ? for help\n" );
 
