@@ -1,6 +1,5 @@
 import java.util.*;
 import java.lang.reflect.*;
-import java.nio.file.FileSystem;
 import java.io.*;
 
 public class Kernel
@@ -204,7 +203,7 @@ public class Kernel
 				return ERROR;
 			if ((myFtEnt = myTcb.getFtEnt(param)) == null)
 				return ERROR;
-			return fs.fsize;
+			return fs.fsize(myFtEnt);
 		case SEEK:    // to be implemented in project
 			int[] seekArgs = (int[]) args;
 			if ((myTcb = scheduler.getMyTcb()) == null)
