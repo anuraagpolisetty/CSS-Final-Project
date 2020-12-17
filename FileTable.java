@@ -15,25 +15,35 @@ public class FileTable {
       // allocate a new file (structure) table entry for this file name
       short iNum = -1; // dir.ialloc(filename);
       Inode iNode = null;
+      
 
       // allocate/retrieve and register the corresponding inode using dir
       while( true ) {
+         // Get inumber from filename
          iNum = ( filename.equals( "/" ) ? 0 : dir.namei( filename ) );
-
          if (iNum < 0) { // file does not exist, create new iNode not from disk
+            if (mode.equals( "r" )) {
+               return null;
+            }  
+            if ((iNum = dir.ialloc(filename)) < 0) 
+               return null;
             iNode = new Inode();
+            break;
          } 
-         else {
+         else if (iNum >= 0){
             iNode = new Inode(iNum);
+
             if ( mode.equals( "r" ) ) {
-               
+
                // break if Inode flag is "read"
-               if (iNode.flag == 2) {
+               if (iNode.flag == 0 || iNode.flag == 1 || iNode.flag == 2) {
+                  //set flag to "read"
+                  iNode.flag = 2;
                   break;
                }
                // if Inode flag is "write" then wait
                else if(iNode.flag == 3) {
-                  try {
+                  try { 
                      wait( );
                   } catch (InterruptedException e) {
                      SysLib.cerr("Error");
@@ -44,6 +54,7 @@ public class FileTable {
 
                // if inode flag is ready to be used
                if (iNode.flag == 0 || iNode.flag == 1) {
+                  iNode.flag = 3;
                   break;
                }
                else {
@@ -55,15 +66,17 @@ public class FileTable {
                   }
                }
             }
-            // else if (mode.equals( "w" )) {
-
-            // }
-            // else if (mode.equals( "w+" )) {
-
-            // }
-            // else if (mode.equals( "a" )) {
-
-            // }
+         } else if (!mode.equals("r")) {
+            iNum = dir.ialloc(filename);
+            if (iNum < 0) {
+               SysLib.cerr("Error when allocating iNumber");
+               SysLib.exit();
+            }
+            iNode = new Inode(iNum);
+            iNode.flag = 3;
+            break;
+         } else {
+            return null;
          }
       
       }

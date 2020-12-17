@@ -151,26 +151,35 @@ public class Kernel
 			System.out.println( e );
 			return ERROR;
 		    }
-		case STDOUT:
-		case STDERR:
-		    System.out.println( "threaOS: caused read errors" );
-		    return ERROR;
-		}
-		// return FileSystem.read( param, byte args[] );
-		return ERROR;
-	    case WRITE:
-		switch ( param ) {
-		case STDIN:
-		    System.out.println( "threaOS: cannot write to System.in" );
-		    return ERROR;
-		case STDOUT:
-		    System.out.print( (String)args );
-		    break;
-		case STDERR:
-		    System.err.print( (String)args );
-		    break;
-		}
-		return OK;
+			case STDOUT:
+			case STDERR:
+				System.out.println( "threadOS: caused read errors" );
+				return ERROR;
+			}
+			// myTcb = scheduler.getMyTcb();
+			// if ((myTcb == null))
+			// 				return ERROR;
+			// if ((myFtEnt = myTcb.getFtEnt(param)) == null)
+			// 				return ERROR;
+			return OK;//fs.read(myFtEnt, (byte[]) args);
+		case WRITE:
+			switch ( param ) {
+			case STDIN:
+				System.out.println( "threadOS: cannot write to System.in" );
+				return ERROR;
+			case STDOUT:
+				System.out.print( (String)args );
+				break;
+			case STDERR:
+				System.err.print( (String)args );
+				break;
+			}
+			// myTcb = scheduler.getMyTcb();
+			// if (myTcb == null)
+			// 	return ERROR;
+			// if ((myFtEnt = myTcb.getFtEnt(param)) == null)
+			// 	return ERROR;
+			return OK;//fs.write(myFtEnt, (byte[]) args);
 	    case CREAD:   // to be implemented in assignment 4
 		return cache.read( param, ( byte[] )args ) ? OK : ERROR;
 	    case CWRITE:  // to be implemented in assignment 4
