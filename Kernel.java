@@ -185,11 +185,10 @@ public class Kernel
 		case OPEN:    // to be implemented in project
 			if ((myTcb = scheduler.getMyTcb()) == null)
 				return ERROR;
-			else {
-				String[] s = (String[]) args;
-				myFtEnt = fs.open(s[0],s[1]);
-				int fd = myTcb.getFd(myFtEnt);
-			}
+			String[] s = (String[]) args;
+			if ((myFtEnt = fs.open(s[0], s[1])) == null)
+				return ERROR;
+			int fd = myTcb.getFd(myFtEnt);
 			return fd;
 		case CLOSE:   // to be implemented in project
 			if ((myTcb = scheduler.getMyTcb()) == null) 
@@ -203,14 +202,14 @@ public class Kernel
 		case SIZE:    // to be implemented in project
 			if ((myTcb = scheduler.getMyTcb()) == null) 
 				return ERROR;
-			if ((myFtEnt = myTcb.getFtEnt(param) == null)
+			if ((myFtEnt = myTcb.getFtEnt(param)) == null)
 				return ERROR;
 			return fs.fsize;
 		case SEEK:    // to be implemented in project
 			int[] seekArgs = (int[]) args;
 			if ((myTcb = scheduler.getMyTcb()) == null)
 				return ERROR;
-			if ((myFtEnt = myTcb.getFtEnt(param) == null)
+			if ((myFtEnt = myTcb.getFtEnt(param)) == null)
 				return ERROR;
 			return fs.seek(myFtEnt, seekArgs[0], seekArgs[1]);
 		case FORMAT:  // to be implemented in project
