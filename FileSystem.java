@@ -11,7 +11,7 @@ public class FileSystem {
 		int dirSize = fsize(dirEnt);
 
 		if (dirSize > 0) {
-			byte[] dirData = new byte[Disk.dirSize];
+			byte[] dirData = new byte[dirSize];
 			read(dirEnt, dirData);
 			directory.bytes2directory(dirData);
 		}
@@ -25,7 +25,7 @@ public class FileSystem {
 		// get the direcotry data in bytes
 		byte[] dirData = directory.directory2bytes();
 		// write the entry
-		wirte(dirEnt, dirData);
+		write(dirEnt, dirData);
 		close(dirEnt);
 		// superblock writes to disk
 		superblock.sync();
@@ -143,7 +143,11 @@ public class FileSystem {
 		// validate FileTableEntry
 		if (ftEnt == null) {
 			return -1;
-		} else if (theInode = ftEnt.inode == null || ftEnt.mode.equals("r")) {
+		}
+
+		theInode = ftEnt.inode;
+
+		if (theInode == null || ftEnt.mode.equals("r")) {
 			return -1;
 		} else if (theInode.flag == 2 ||
 				   theInode.flag == 3 ||
@@ -175,7 +179,7 @@ public class FileSystem {
 
 				// write until as much as is available,
 				// or the whole thing
-				writeLength = Math.min(available, remainingBytes);
+				writeLength = Math.min(availBytes, remainingBytes);
 
 				// get block
 				int block = theInode.findTargetBlock(offset);
@@ -183,28 +187,32 @@ public class FileSystem {
 				// validate block
 				if (block == -1) {
 					// check if out of memory
-					if (block = superblock.getFreeBlock() == -1) {
+					block = superblock.getFreeBlock();
+
+					if (block == -1) {
 						// set flag to delete
 						theInode.flag = 4;
 						break;
 					}
 
 					// read file to the block
-					if (theInode.registerTargetBlock(seekPtr, block) == -1) {
+					if (theInode.registerTargetBlock(seekPtr, (short) block) == -1) {
 						// out of bounds
-						if (theInode.registerIndexBlock(block) == -1) {
+						if (theInode.registerIndexBlock((short) block) == false) {
 							theInode.flag = 4;
 							break;
 						}
 
 						// get a new free block
-						if (block = superblock.getFreeBlock() == -1) {
+						block = superblock.getFreeBlock();
+
+						if (block == -1) {
 							theInode.flag = 4;
 							break;
 						}
 
 						// setup new block
-						if (theInode.registerTargetBlock(seekPtr, block) == -1) {
+						if (theInode.registerTargetBlock(seekPtr, (short) block) == -1) {
 							theInode.flag = 4;
 							break;
 						}
@@ -280,15 +288,15 @@ public class FileSystem {
 
 			switch (whence) {
 				// SEEK_SET
-				CASE 0:
+				case 0:
 					seekPtr = offset;
 					break;
 				// SEEK_CUR
-				CASE 1:
+				case 1:
 					seekPtr += offset;
 					break;
 				// SEEK_END
-				CASE 2:
+				case 2:
 					seekPtr = eofPtr + offset;
 					break;
 				default:
@@ -306,11 +314,11 @@ public class FileSystem {
 			ftEnt.seekPtr = seekPtr;
 		}
 
-		rturn seekPtr;
+		return seekPtr;
 	}
 
 	// helper function that empties inode and deletes blocks
-	private boolan deallocAllBlocks(FileTableEntry ftEnt) {
+	private boolean deallocAllBlocks(FileTableEntry ftEnt) {
 		if (ftEnt == null || ftEnt.inode.count != 1) {
 			return false;
 		}
@@ -324,7 +332,7 @@ public class FileSystem {
 		}
 
 		// unregister indexBlock
-		byte[] freeBlocks = ftEnt.inode.unregisterIndexBlocks();
+		byte[] freeBlocks = ftEnt.inode.unregisterIndexBlock();
 
 		// deallocate indirect blocks
 		if (freeBlocks != null) {

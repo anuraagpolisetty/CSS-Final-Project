@@ -66,12 +66,12 @@ public class Inode {
 	}
 
 	// calculates and returns a block number
-	int getBlockNum(iNumber) {
+	int getBlockNum(short iNumber) {
 		return 1 + iNumber / 16;
 	}
 
 	// calculates and returns an offset
-	int getOffset(iNumber) {
+	int getOffset(short iNumber) {
 		return (iNumber % 16) * iNodeSize;
 	}
 
@@ -112,7 +112,7 @@ public class Inode {
 		}
 
 		if (indirect != -1) {
-			byte data = new byte[Disk.blockSize];
+			byte[] data = new byte[Disk.blockSize];
 			SysLib.rawread(indirect, data);
 
 			int location = blockNum - directSize;
@@ -164,10 +164,10 @@ public class Inode {
 	// delete a registered block in indirect
 	byte[] unregisterIndexBlock() {
 		if (indirect == -1) {
-			return -1;
+			return null;
 		}
 		
-		byte[] data = new byte[Data.blockSize];
+		byte[] data = new byte[Disk.blockSize];
 		SysLib.rawread(indirect, data);
 
 		indirect = -1;
