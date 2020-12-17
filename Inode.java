@@ -63,6 +63,8 @@ public class Inode {
 
 		SysLib.short2bytes(indirect, data, offset);
 		SysLib.rawwrite(blockNum, data);
+
+
 	}
 
 	// calculates and returns a block number
