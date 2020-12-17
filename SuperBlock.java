@@ -32,6 +32,8 @@ class SuperBlock {
 
 	// reformat Inodes and SuperBlocks by numBlock
 	void format(int numBlocks) {
+		byte[] block = null;
+
 		// reset the Inode count
 		inodeBlocks = numBlocks;
 
@@ -50,7 +52,7 @@ class SuperBlock {
 
 		// create new free blocks and write them to disk
 		for (int i = totalBlocks - 2; i >= freeList; i--) {
-			byte[] block = new byte[Disk.blockSize];
+			block = new byte[Disk.blockSize];
 
 			for (int j = 0; j < Disk.blockSize; j++) {
 				block[j] = (byte)0;
@@ -62,9 +64,9 @@ class SuperBlock {
 
 		// the last block is a null pointer
 		// create it and write it to disk
-		byte[] lastBlock = new byte[Disk.blockSize];
-		SysLib.int2bytes(-1, lastBlock, 0);
-		SysLib.rawwrite(totalBlocks - 1, lastBlock);
+		//byte[] lastBlock = new byte[Disk.blockSize];
+		SysLib.int2bytes(-1, block, 0);
+		SysLib.rawwrite(totalBlocks - 1, block);
 
 		sync();
 	}
