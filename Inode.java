@@ -63,8 +63,6 @@ public class Inode {
 
 		SysLib.short2bytes(indirect, data, offset);
 		SysLib.rawwrite(blockNum, data);
-
-
 	}
 
 	// calculates and returns a block number
@@ -113,15 +111,15 @@ public class Inode {
 			return direct[blockNum];
 		}
 
-		if (indirect != -1) {
-			byte[] data = new byte[Disk.blockSize];
-			SysLib.rawread(indirect, data);
-
-			int location = blockNum - directSize;
-			return SysLib.bytes2short(data, location * 2);
-		} else {
+		if (indirect < 0) {
 			return -1;
 		}
+		
+		byte[] data = new byte[Disk.blockSize];
+		SysLib.rawread(indirect, data);
+		int location = blockNum - directSize;
+		
+		return SysLib.bytes2short(data, location * 2);
 	}
 
 	// register the target block into either direct or indirect

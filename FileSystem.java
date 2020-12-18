@@ -124,6 +124,7 @@ public class FileSystem {
 
 				// read into data
 				SysLib.rawread(block, data);
+
 				// copy data into buffer
 				System.arraycopy(data, offset, buffer, idx, readLength);
 
@@ -152,17 +153,6 @@ public class FileSystem {
 			return -1;
 		}
 
-		/*
-		else if (theInode.flag == 2 ||
-				   theInode.flag == 3 ||
-				   theInode.flag == 4) {
-
-			SysLib.cerr("\nInode flag is 2, 3, or 4\n");
-
-			return -1;
-		}
-		*/
-
 		int bufferLength = buffer.length;
 		int seekPtr, idx, offset, availBytes, remainingBytes, writeLength;
 		byte[] data;
@@ -184,9 +174,7 @@ public class FileSystem {
 				offset 		   = seekPtr % Disk.blockSize;
 				availBytes 	   = Disk.blockSize - offset;
 				remainingBytes = bufferLength - idx;
-
-				// write until as much as is available,
-				// or the whole thing
+				// write until as much as is available, or the whole thing
 				writeLength = Math.min(availBytes, remainingBytes);
 
 				// get block
@@ -198,43 +186,33 @@ public class FileSystem {
 					block = superblock.getFreeBlock();
 
 					if (block == -1) {
-						// set flag to delete
-						theInode.flag = 4;
-						break;
+						return -1;
 					}
 
 					// read file to the block
 					if (theInode.registerTargetBlock(seekPtr, (short) block) == -1) {
 						// out of bounds
 						if (theInode.registerIndexBlock((short) block) == false) {
-							theInode.flag = 4;
-							break;
+							return -1;
 						}
 
 						// get a new free block
 						block = superblock.getFreeBlock();
 
 						if (block == -1) {
-							theInode.flag = 4;
-							break;
+							return -1;
 						}
 
 						// setup new block
 						if (theInode.registerTargetBlock(seekPtr, (short) block) == -1) {
-							theInode.flag = 4;
-							break;
+							return -1;
 						}
 					}
 				}
 
 				// if the block is not in range
 				if (block >= superblock.totalBlocks) {
-					theInode.flag = 4;
-					break;
-				}
-
-				if (offset == 0) {
-					data = new byte[Disk.blockSize];
+					return -1;
 				}
 
 				// read into data
@@ -257,9 +235,7 @@ public class FileSystem {
 			seek(ftEnt, idx, 1);
 
 			// set flag
-			if (theInode.flag != 4) {
-				theInode.flag = 1;
-			}
+			theInode.flag = 1;
 
 			// save to disk
 			theInode.toDisk(ftEnt.iNumber);
